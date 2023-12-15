@@ -847,21 +847,27 @@ contract BalancerPoolTokenPrice is PriceSubmodule {
                         balances_[i] = FixedPoint.mulDown(balances_[i], scalingFactors[i]);
                     }
 
-                    // Calculate the quantity of lookupTokens returned by swapping 1 destinationToken
-                    lookupTokensPerDestinationToken = StableMath._calcOutGivenIn(
-                        ampFactor,
-                        balances_,
-                        destinationTokenIndex,
-                        lookupTokenIndex,
-                        1e18,
-                        StableMath._calculateInvariant(ampFactor, balances_) // Sometimes the fetched invariant value does not work, so calculate it
-                    );
+                    console.log(ampFactor);
+                    console.log(balances_[0]);
+                    console.log(balances_[1]);
+                    //balances_[1] = balances_[0];
+                    StableMath._calculateInvariant(ampFactor, balances_);
 
-                    // Downscale the amount to token decimals
-                    lookupTokensPerDestinationToken = FixedPoint.divDown(
-                        lookupTokensPerDestinationToken,
-                        scalingFactors[lookupTokenIndex]
-                    );
+        // Calculate the quantity of lookupTokens returned by swapping 1 destinationToken
+//                    lookupTokensPerDestinationToken = StableMath._calcOutGivenIn(
+//                        ampFactor,
+//                        balances_,
+//                        destinationTokenIndex,
+//                        lookupTokenIndex,
+//                        1e18,
+//                        StableMath._calculateInvariant(ampFactor, balances_) // Sometimes the fetched invariant value does not work, so calculate it
+//                    );
+//
+//                    // Downscale the amount to token decimals
+//                    lookupTokensPerDestinationToken = FixedPoint.divDown(
+//                        lookupTokensPerDestinationToken,
+//                        scalingFactors[lookupTokenIndex]
+//                    );
                 } catch (bytes memory) {
                     // Ensure that the pool is a stable pool, but not a composable stable pool.
                     // Determining the token price using a composable stable pool is sufficiently different from other
@@ -871,19 +877,19 @@ contract BalancerPoolTokenPrice is PriceSubmodule {
             }
 
             // Convert to outputDecimals
-            lookupTokensPerDestinationToken = _convertERC20Decimals(
-                lookupTokensPerDestinationToken,
-                lookupToken_,
-                outputDecimals_
-            );
-
-            // Price per destinationToken / quantity
-            lookupTokenPrice = destinationTokenPrice.mulDiv(
-                10 ** outputDecimals_,
-                lookupTokensPerDestinationToken
-            );
+//            lookupTokensPerDestinationToken = _convertERC20Decimals(
+//                lookupTokensPerDestinationToken,
+//                lookupToken_,
+//                outputDecimals_
+//            );
+//
+//            // Price per destinationToken / quantity
+//            lookupTokenPrice = destinationTokenPrice.mulDiv(
+//                10 ** outputDecimals_,
+//                lookupTokensPerDestinationToken
+//            );
         }
 
-        return lookupTokenPrice;
+        return 1;
     }
 }
