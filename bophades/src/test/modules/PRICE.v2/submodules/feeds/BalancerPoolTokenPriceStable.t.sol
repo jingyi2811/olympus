@@ -47,8 +47,11 @@ contract BalancerPoolTokenPriceStableTest is Test {
     uint256 B_80BAL_20WETH_BALANCE = 507713528624138828935656;
     uint256 AURA_BAL_BALANCE = 696558540009160592774860;
 
-    uint256 B_80BAL_20WETH_BALANCE_PRICE = 16.71 * 1e18;
-    uint256 B_80BAL_20WETH_BALANCE_PRICE_EXPECTED = 16710001252344598708;
+    uint B_80BAL_20WETH_DECIMALS_Power = 10 ** B_80BAL_20WETH_DECIMALS;
+    uint AURA_BAL_DECIMALS_Power = 10 ** AURA_BAL_DECIMALS;
+
+    uint256 B_80BAL_20WETH_BALANCE_PRICE = 16 * B_80BAL_20WETH_DECIMALS_Power;
+    uint256 B_80BAL_20WETH_BALANCE_PRICE_EXPECTED = B_80BAL_20WETH_BALANCE_PRICE;
     uint256 AURA_BAL_PRICE_EXPECTED = 16602528871962134544;
 
     uint256 BALANCER_POOL_RATE = 1032914638684593940;
@@ -60,7 +63,7 @@ contract BalancerPoolTokenPriceStableTest is Test {
 
     function setUp() public {
 
-        address poolAddr = 0x3dd0843A028C86e0b760b1A76929d1C5Ef93a2dd;
+        address poolAddr = 0xDACf5Fa19b1f720111609043ac67A9818262850c;
 
         IStablePool pool = IStablePool(poolAddr);
         BALANCER_POOL_ID = pool.getPoolId();
@@ -73,25 +76,26 @@ contract BalancerPoolTokenPriceStableTest is Test {
         (address[] memory t, uint256[] memory b, ) =
         balancerVault.getPoolTokens(BALANCER_POOL_ID);
 
-        address B_80BAL_20WETH = t[0];
-        address AURA_BAL = t[1];
+        B_80BAL_20WETH = t[0];
+        console.log(B_80BAL_20WETH);
+        AURA_BAL = t[1];
 
-        uint8 B_80BAL_20WETH_DECIMALS = IERC20(t[0]).decimals();
-        uint8 AURA_BAL_DECIMALS = IERC20(t[1]).decimals();
+        B_80BAL_20WETH_DECIMALS = IERC20(t[0]).decimals();
+        AURA_BAL_DECIMALS = IERC20(t[1]).decimals();
 
-        uint256 B_80BAL_20WETH_BALANCE = b[0];
-        uint256 AURA_BAL_BALANCE = b[1];
+        B_80BAL_20WETH_BALANCE = b[0];
+        AURA_BAL_BALANCE = b[1];
 
-        uint256 B_80BAL_20WETH_BALANCE_PRICE = 16.71 * 1e18;
-        uint256 B_80BAL_20WETH_BALANCE_PRICE_EXPECTED = 16710001252344598708;
-        uint256 AURA_BAL_PRICE_EXPECTED = 16602528871962134544;
+        B_80BAL_20WETH_BALANCE_PRICE = 16.71 * 1e18;
+        B_80BAL_20WETH_BALANCE_PRICE_EXPECTED = 16710001252344598708;
+        AURA_BAL_PRICE_EXPECTED = 16602528871962134544;
 
-        uint256 BALANCER_POOL_RATE = 1032914638684593940;
+        BALANCER_POOL_RATE = 1032914638684593940;
 
-        uint8 PRICE_DECIMALS = 18;
+        PRICE_DECIMALS = 18;
 
-        uint8 MIN_DECIMALS = 6;
-        uint8 MAX_DECIMALS = 50;
+        MIN_DECIMALS = 6;
+        MAX_DECIMALS = 50;
 
         vm.warp(51 * 365 * 24 * 60 * 60); // Set timestamp at roughly Jan 1, 2021 (51 years since Unix epoch)
 

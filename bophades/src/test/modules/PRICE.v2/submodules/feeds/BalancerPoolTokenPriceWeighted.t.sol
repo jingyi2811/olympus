@@ -43,6 +43,9 @@ contract BalancerPoolTokenPriceWeightedTest is Test {
     uint8  USDC_DECIMALS = 6;
     uint8  WETH_DECIMALS = 18;
 
+    uint USDCPower = 10 ** (WETH_DECIMALS - USDC_DECIMALS);
+    uint WETHPower = 10 ** WETH_DECIMALS;
+
     uint256  USDC_WEIGHT = 500000000000000000;
     uint256  WETH_WEIGHT = 500000000000000000;
 
@@ -57,17 +60,17 @@ contract BalancerPoolTokenPriceWeightedTest is Test {
     // ((base reserves / base weight) / (destination reserves / destination weight)) * base rate
     // = 1660.2643102434 * 10^18
     uint256  WETH_RATE =
-        (((USDC_BALANCE * 1e12 * 1e18) / USDC_WEIGHT) * USDC_PRICE) /
-            ((WETH_BALANCE * 1e18) / WETH_WEIGHT);
+        (((USDC_BALANCE * (USDCPower) * WETHPower) / USDC_WEIGHT) * USDC_PRICE) /
+            ((WETH_BALANCE * WETHPower) / WETH_WEIGHT);
     uint256  USDC_RATE =
-        (((WETH_BALANCE * 1e18) / WETH_WEIGHT) * WETH_PRICE) /
-            ((USDC_BALANCE * 1e12 * 1e18) / USDC_WEIGHT);
+        (((WETH_BALANCE * WETHPower) / WETH_WEIGHT) * WETH_PRICE) /
+            ((USDC_BALANCE * USDCPower * WETHPower) / USDC_WEIGHT);
 
     uint8  MIN_DECIMALS = 6;
     uint8  MAX_DECIMALS = 50;
 
     function setUp() public {
-        address poolAddr = 0x5c6Ee304399DBdB9C8Ef030aB642B10820DB8F56;
+        address poolAddr = 0xcF7b51ce5755513d4bE016b0e28D6EDEffa1d52a;
         BALANCER_POOL = poolAddr;
 
         IWeightedPool pool = IWeightedPool(poolAddr);
