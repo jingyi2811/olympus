@@ -63,7 +63,7 @@ contract BalancerPoolTokenPriceStableTest is Test {
 
     function setUp() public {
 
-        address poolAddr = 0xDACf5Fa19b1f720111609043ac67A9818262850c;
+        address poolAddr = 0x1E19CF2D73a72Ef1332C882F20534B6519Be0276;
 
         IStablePool pool = IStablePool(poolAddr);
         BALANCER_POOL_ID = pool.getPoolId();
