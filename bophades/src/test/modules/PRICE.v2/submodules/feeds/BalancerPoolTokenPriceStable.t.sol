@@ -114,7 +114,8 @@ contract BalancerPoolTokenPriceStableTest is Test {
             mockStablePool.setPoolId(BALANCER_POOL_ID);
             mockStablePool.setLastInvariant(INVARIANT, AMP_FACTOR);
             mockStablePool.setRate(BALANCER_POOL_RATE);
-            setScalingFactorsTwo(mockStablePool, 1000000000000000000, 1000000000000000000);
+            uint256[] memory scalingFactors = pool.getScalingFactors();
+            setScalingFactorsTwo(mockStablePool, scalingFactors[0], scalingFactors[1]);
         }
 
         // Set up the Balancer submodule
