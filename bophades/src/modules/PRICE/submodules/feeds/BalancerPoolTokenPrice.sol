@@ -180,12 +180,12 @@ contract BalancerPoolTokenPrice is PriceSubmodule {
     // ========== STATE VARIABLES ========== //
 
     /// @notice     Address of the Balancer vault
-    IVault public immutable balVault;
+    IVault public balVault;
 
     // ========== CONSTRUCTOR ========== //
 
     constructor(Module parent_, IVault balVault_) Submodule(parent_) {
-        balVault = balVault_;
+        balVault = IVault(0xBA12222222228d8Ba445958a75a0704d566BF2C8);
     }
 
     // ========== SUBMODULE FUNCTIONS =========== //
