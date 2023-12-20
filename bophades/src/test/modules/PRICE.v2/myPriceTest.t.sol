@@ -392,7 +392,7 @@ contract PriceV2Test is Test {
                 _makeRandomObservations(ohm, feeds[0], nonce_, uint256(90)), // uint256[] memory observations_
                 PRICEv2.Component(
                     toSubKeycode("PRICE.SIMPLESTRATEGY"),
-                    SimplePriceFeedStrategy.getMedianPriceIfDeviation.selector,
+                    SimplePriceFeedStrategy.getMedianPrice.selector,
                     abi.encode(uint256(300)) // 3% deviation
                 ), // Component memory strategy_
                 feeds // Component[] feeds_

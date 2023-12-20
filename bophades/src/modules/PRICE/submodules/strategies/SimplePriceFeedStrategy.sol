@@ -3,6 +3,7 @@ pragma solidity 0.8.15;
 
 import "modules/PRICE/PRICE.v2.sol";
 import {QuickSort} from "libraries/QuickSort.sol";
+import {console} from "forge-std/console.sol";
 
 /// @title      SimplePriceFeedStrategy
 /// @author     0xJem
@@ -56,7 +57,7 @@ contract SimplePriceFeedStrategy is PriceSubmodule {
     ///
     /// @param array_  Array of uint256 values
     /// @return        Array of non-zero uint256 values
-    function _getNonZeroArray(uint256[] memory array_) internal pure returns (uint256[] memory) {
+    function _getNonZeroArray(uint256[] memory array_) internal view returns (uint256[] memory) {
         // Determine the number of non-zero array elements
         uint256 nonZeroCount = 0;
         for (uint256 i = 0; i < array_.length; i++) {
@@ -82,7 +83,7 @@ contract SimplePriceFeedStrategy is PriceSubmodule {
     ///
     /// @param prices_  Array of prices
     /// @return         The average price or 0
-    function _getAveragePrice(uint256[] memory prices_) internal pure returns (uint256) {
+    function _getAveragePrice(uint256[] memory prices_) internal view returns (uint256) {
         uint256 pricesLen = prices_.length;
 
         // If all price feeds are down, no average can be calculated
@@ -104,8 +105,13 @@ contract SimplePriceFeedStrategy is PriceSubmodule {
     ///
     /// @param prices_  Array of prices
     /// @return         The median price
-    function _getMedianPrice(uint256[] memory prices_) internal pure returns (uint256) {
+    function _getMedianPrice(uint256[] memory prices_) internal view returns (uint256) {
         uint256 pricesLen = prices_.length;
+
+        console.log(3333);
+        console.log(prices_[0]);
+        console.log(prices_[1]);
+        console.log(prices_[2]);
 
         // If there are an even number of prices, return the average of the two middle prices
         if (pricesLen % 2 == 0) {
@@ -133,7 +139,7 @@ contract SimplePriceFeedStrategy is PriceSubmodule {
     function getFirstNonZeroPrice(
         uint256[] memory prices_,
         bytes memory
-    ) public pure returns (uint256) {
+    ) public view returns (uint256) {
         // Can't work with 0 length
         uint256 pricesLen = prices_.length;
         if (pricesLen == 0) revert SimpleStrategy_PriceCountInvalid(pricesLen, 1);
@@ -170,7 +176,7 @@ contract SimplePriceFeedStrategy is PriceSubmodule {
     function getAveragePriceIfDeviation(
         uint256[] memory prices_,
         bytes memory params_
-    ) public pure returns (uint256) {
+    ) public view returns (uint256) {
         // Can't work with  < 2 length
         if (prices_.length < 2) revert SimpleStrategy_PriceCountInvalid(prices_.length, 2);
 
@@ -230,7 +236,10 @@ contract SimplePriceFeedStrategy is PriceSubmodule {
     function getMedianPriceIfDeviation(
         uint256[] memory prices_,
         bytes memory params_
-    ) public pure returns (uint256) {
+    ) public view returns (uint256) {
+
+        console.log(55);
+
         // Misconfiguration
         if (prices_.length < 3) revert SimpleStrategy_PriceCountInvalid(prices_.length, 3);
 
@@ -242,6 +251,8 @@ contract SimplePriceFeedStrategy is PriceSubmodule {
         // Cache first non-zero price since the array is sorted in place
         uint256 firstNonZeroPrice = nonZeroPrices[0];
 
+        console.log(777);
+
         // If there are not enough non-zero prices to calculate a median, return the first non-zero price
         if (nonZeroPrices.length < 3) return firstNonZeroPrice;
 
@@ -252,10 +263,16 @@ contract SimplePriceFeedStrategy is PriceSubmodule {
         uint256 averagePrice = _getAveragePrice(sortedPrices);
         uint256 medianPrice = _getMedianPrice(sortedPrices);
 
+        console.log(77777);
+        console.log(averagePrice);
+        console.log(medianPrice);
+
         if (params_.length != DEVIATION_PARAMS_LENGTH) revert SimpleStrategy_ParamsInvalid(params_);
         uint256 deviationBps = abi.decode(params_, (uint256));
         if (deviationBps <= DEVIATION_MIN || deviationBps >= DEVIATION_MAX)
             revert SimpleStrategy_ParamsInvalid(params_);
+
+        console.log(deviationBps);
 
         // Check the deviation of the minimum from the average
         uint256 minPrice = sortedPrices[0];
@@ -269,21 +286,16 @@ contract SimplePriceFeedStrategy is PriceSubmodule {
         return firstNonZeroPrice;
     }
 
-    /// @notice         This strategy returns the average of the non-zero prices in the array.
-    /// @dev            Return 0 if all prices in the array are zero. This ensures that a situation
-    /// @dev            where all price feeds are down is handled gracefully.
-    ///
-    /// @dev            Will revert if:
-    /// @dev            - The number of elements in the `prices_` array is less than 2 (which would represent a mis-configuration)
-    ///
-    /// @dev            Zero prices in the array are ignored, to allow for
-    /// @dev            handling of price lookup sources that return errors.
-    /// @dev            Otherwise, an asset with any zero price would result in
-    /// @dev            no price being returned at all.
-    ///
-    /// @param prices_  Array of prices
-    /// @return         The resolved price
-    function getAveragePrice(uint256[] memory prices_, bytes memory) public pure returns (uint256) {
+    function getAveragePrice(uint256[] memory x, bytes memory) public view returns (uint256) {
+
+        uint[] memory prices_ = new uint[](5);
+        prices_[0] = 1_000_000_000_1;
+        prices_[1] = 1_000_000_000_2;
+        prices_[2] = 1_000_000_000_1;
+        prices_[3] = 1_000_000_000_4;
+        prices_[4] = 1_000_000_000_5;
+        prices_[5] = 1_000_000_000_6;
+
         // Handle misconfiguration
         if (prices_.length < 2) revert SimpleStrategy_PriceCountInvalid(prices_.length, 2);
 
@@ -292,23 +304,16 @@ contract SimplePriceFeedStrategy is PriceSubmodule {
         return _getAveragePrice(nonZeroPrices);
     }
 
-    /// @notice         This strategy returns the median of the non-zero prices in the array.
-    /// @dev            If the array has an even number of non-zero prices, the average of the two middle
-    /// @dev            prices is returned.
-    ///
-    /// @dev            Zero prices in the array are ignored, to allow for
-    /// @dev            handling of price lookup sources that return errors.
-    /// @dev            Otherwise, an asset with any zero price would result in
-    /// @dev            no price being returned at all.
-    ///
-    /// @dev            If there are not enough non-zero array elements to calculate a median (< 3), the first non-zero price is returned.
-    ///
-    /// @dev            Will revert if:
-    /// @dev            - The number of elements in the `prices_` array is less than 3, since it would represent a mis-configuration.
-    ///
-    /// @param prices_  Array of prices
-    /// @return         The resolved price
-    function getMedianPrice(uint256[] memory prices_, bytes memory) public pure returns (uint256) {
+    function getMedianPrice(uint256[] memory x, bytes memory) public view returns (uint256) {
+
+        uint[] memory prices_ = new uint[](5);
+        prices_[0] = 1_000_000_000_1;
+        prices_[1] = 1_000_000_000_2;
+        prices_[2] = 1_000_000_000_2;
+        prices_[3] = 1_000_000_000_4;
+        prices_[4] = 1_000_000_000_5;
+        prices_[5] = 1_000_000_000_6;
+
         // Misconfiguration
         if (prices_.length < 3) revert SimpleStrategy_PriceCountInvalid(prices_.length, 3);
 
